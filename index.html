@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DomChanger Example</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+  <style type="text/css" media="screen">
+    button {
+      margin-left: 1em;
+    }
+  </style>
+</head>
+<body>
+  <div id="application"></div>
+  <script src="github.fetch.js"></script>
+  <script src="domchanger.min.js"></script>
+  <script>
+    function TodoApp(emit, refresh) {
+      var items = [], text = "";
+      function render() {
+        return ["div",
+        ["h3", "TODO"],
+        [TodoList, items],
+        ["form", {
+          onsubmit: handleSubmit
+        },
+        ["input", {
+          onchange: onChange,
+          autofocus: true,
+          value: text,
+          type: 'text'
+        }],
+        ["button", {
+          type: 'submit'
+        }, "Add #", items.length + 1],
+        ["button", {
+          type: 'button',
+          onclick: handleClick
+        }, "Fetch"]
+        ]
+        ];
+      }
+
+      function handleSubmit(event) {
+        event.preventDefault();
+        // dont submit empty
+        if (text) {
+          items.push(text);
+          text = "";
+          refresh();
+        }
+      }
+
+      function handleClick() {
+        fetch('items.json')
+        .then(function(res) {
+          return res.json();
+        }).then(function(json) {
+          json.forEach(function(text) {
+            items.push(text.text);
+          });
+          refresh();
+        }).catch(function(ex) {
+          console.log('parsing failed', ex);
+        })
+      }
+
+      function onChange(event) {
+        text = event.target.value;
+      }
+      return { render: render };
+    }
+
+    function TodoList() {
+      function render(items) {
+        return ["ul", items.map(function (itemText) {
+          return ["li", itemText];
+        })];
+      }
+      return { render: render };
+    }
+    window.app = domChanger(TodoApp, document.getElementById('application'));
+    app.update();
+  </script>
+</body>
+</html>
