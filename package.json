@@ -1,0 +1,12 @@
+{
+  "name": "domchanger-example",
+  "scripts": {
+    "postinstall": "cp ./node_modules/domchanger/domchanger.js ./public/domchanger.js && cp ./node_modules/whatwg-fetch/fetch.js ./public/fetch.js",
+    "start": "ecstatic -p 8000 ./public"
+  },
+  "dependencies": {
+    "domchanger": "git://github.com/creationix/domchanger.git",
+    "ecstatic": "~0.8.0",
+    "whatwg-fetch": "^0.9.0"
+  }
+}
