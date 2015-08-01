@@ -7,6 +7,28 @@
     button {
       margin-left: 1em;
     }
+    li {
+      position: relative;
+    }
+    label {
+      opacity: 1;
+      transition: opacity 0.4s ease;
+    }
+    label:hover {
+      cursor: pointer;
+    }
+    label.completed {
+      opacity: 0.4;
+      text-decoration: line-through;
+    }
+    span {
+      position: absolute;
+      top: 0;
+      left: 150px;
+    }
+    span:hover {
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -34,7 +56,7 @@
         }, "Add #", items.length + 1],
         ["button", {
           type: 'button',
-          onclick: handleClick
+          onclick: handleFetch
         }, "Fetch"]
         ]
         ];
@@ -43,14 +65,14 @@
       function handleSubmit(event) {
         event.preventDefault();
         // dont submit empty
-        if (text) {
+        if (text.trim()) {
           items.push(text);
           text = "";
           refresh();
         }
       }
 
-      function handleClick() {
+      function handleFetch() {
         fetch('items.json')
         .then(function(res) {
           return res.json();
@@ -67,13 +89,44 @@
       function onChange(event) {
         text = event.target.value;
       }
+
       return { render: render };
     }
 
     function TodoList() {
       function render(items) {
-        return ["ul", items.map(function (itemText) {
-          return ["li", itemText];
+        function toggleState(event) {
+          this.parentElement.classList.toggle('completed');
+        }
+        function deleteItem(index) {
+          console.log(index);
+          if (index === 0) {
+            items.splice(-1, 1);
+          } else {
+            items.splice(index, 1);
+          }
+          app.update();
+        }
+        return ["ul", items.map(function (itemText, index) {
+          return ["li", {
+            id: 'item-' + index
+          },
+          ["label", { for: 'input-' + index},
+          ["input", {
+            id: 'input-' + index,
+            onclick: toggleState,
+            value: 1,
+            type: 'checkbox'
+          }],
+          itemText
+          ],
+          ["span", {
+            id: 'delete-' + index,
+            onclick: deleteItem.bind(this, index),
+            value: 1,
+            class: 'delete'
+          }, 'X']
+          ];
         })];
       }
       return { render: render };
