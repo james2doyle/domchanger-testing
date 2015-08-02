@@ -17,14 +17,22 @@
     label:hover {
       cursor: pointer;
     }
-    label.completed {
+    .completed label {
       opacity: 0.4;
       text-decoration: line-through;
     }
     span {
       position: absolute;
       top: 0;
+      left: 350px;
+      font-family: arial;
+      font-weight: bold;
+      opacity: 0;
+      transition: all 0.4s ease;
+    }
+    .completed span {
       left: 150px;
+      opacity: 1;
     }
     span:hover {
       cursor: pointer;
@@ -96,12 +104,11 @@
     function TodoList() {
       function render(items) {
         function toggleState(event) {
-          this.parentElement.classList.toggle('completed');
+          this.parentElement.parentElement.classList.toggle('completed');
         }
         function deleteItem(index) {
-          console.log(index);
-          if (index === 0) {
-            items.splice(-1, 1);
+          if (items.length <= 1) {
+            items = [];
           } else {
             items.splice(index, 1);
           }
@@ -111,7 +118,7 @@
           return ["li", {
             id: 'item-' + index
           },
-          ["label", { for: 'input-' + index},
+          ["label", { for: 'input-' + index },
           ["input", {
             id: 'input-' + index,
             onclick: toggleState,
